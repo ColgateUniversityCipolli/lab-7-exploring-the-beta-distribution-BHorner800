@@ -99,5 +99,3 @@ pop.chars = function(alpha, beta){
 }
 
 
-(pop.chars(2, 5))
-(beta.moment(2, 5, 1,))
