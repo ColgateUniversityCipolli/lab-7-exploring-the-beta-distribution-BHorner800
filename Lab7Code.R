@@ -8,8 +8,8 @@
 #############################################################################
 library(ggplot2)
 library(tidyverse)
-
-
+library(e1071)
+library(ggplot2)
 #############################################################################
 #Task 1: Describe The Population Distribution
 #############################################################################
@@ -36,7 +36,7 @@ plot.beta = function(alpha, beta){
                             sd = sqrt((alpha*beta)/((alpha+beta)^2*(alpha+beta+1)))))
   
   ggplot(data= fig.dat)+                                              # specify data
-    geom_line(aes(x=x, y=beta.pdf, color="Beta(2,5)")) +                 # plot beta dist
+    geom_line(aes(x=x, y=beta.pdf, color="Beta")) +                 # plot beta dist
     geom_line(aes(x=x, y=norm.pdf, color="Gaussian(0.2857, 0.0255)")) +  # plot guassian dist
     geom_hline(yintercept=0)+                                            # plot x axis
     theme_bw()+                                                          # change theme
@@ -98,4 +98,37 @@ pop.chars = function(alpha, beta){
   results = c(mean, var, skew, kurt)
 }
 
+
+#############################################################################
+#Task 3: Do Data Summaries Help
+#############################################################################
+##########################
+# Generate a sample
+##########################
+beta.sample.summary = function(alpha, beta){
+  set.seed(7272) # Set seed so we all get the same results.
+  sample.size <- 500 # Specify sample details
+  beta.sample <- rbeta(n = sample.size,  # sample size
+                       shape1 = alpha,   # alpha parameter
+                       shape2 = beta)    # beta parameter
+  
+  beta.sample.tibble = tibble(values = beta.sample) %>%
+    summarize(mean = mean(beta.sample),
+              variance = var(beta.sample),
+              skewness = skewness(beta.sample),
+              kurtosis = kurtosis(beta.sample)
+              
+    )
+  df <- data.frame(beta_sample = beta.sample) #makes it into df instead of vector. 
+  #Plotting
+  ggplot(df, aes(x = beta_sample)) + #assigns the data as the data frame and aes = x asis
+    geom_histogram(aes(y=after_stat(density)), binwidth = 0.05, fill = "lightblue", color = "black") + #makes histogram
+    geom_density(color = "red", size = 1) +  #Density curve
+    stat_function(fun = dbeta, args = list(shape1 = alpha, shape2 = beta), color = "blue", size = 1) +  #True prob density
+    labs(title = "Histogram of Beta Sample", #titles and axis labels
+         x = "Beta Distribution Values", 
+         y = "Probability Density")
+}
+
+(beta.sample.summary(2, 5))
 
