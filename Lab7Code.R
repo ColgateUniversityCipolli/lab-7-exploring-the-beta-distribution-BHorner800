@@ -1,0 +1,103 @@
+#############################################################################
+#Lab 7
+#Ben Horner
+#Math240
+#############################################################################
+#############################################################################
+#Libraries
+#############################################################################
+library(ggplot2)
+library(tidyverse)
+
+
+#############################################################################
+#Task 1: Describe The Population Distribution
+#############################################################################
+summarize.beta = function(alpha, beta){
+  ab.values = paste(c(alpha,beta), collapse = ",")
+  mean = (alpha)/(alpha + beta)
+  var = (alpha*beta)/(((alpha + beta)^2)*(alpha + beta + 1))
+  skew = (2*(beta - alpha)*sqrt(alpha + beta + 1))/((alpha + beta + 2)*sqrt(alpha*beta))
+  kurt = 6*((alpha-beta)^2 * (alpha + beta + 1) - alpha*beta*(alpha + beta + 2))/(
+    alpha*beta*(alpha + beta + 2)*(alpha + beta + 3))
+  
+  beta.summaries = data.frame(beta_distribution = ab.values, 
+                              mean = mean,
+                              varience = var,
+                              skewness = skew,
+                              excess_kurtosis = kurt)
+}
+
+plot.beta = function(alpha, beta){
+  fig.dat <- tibble(x = seq(-0.25, 1.25, length.out=1000))|>   # generate a grid of points
+    mutate(beta.pdf = dbeta(x, alpha, beta),                      # compute the beta PDF
+           norm.pdf = dnorm(x,                                    # Gaussian distribution with
+                            mean = alpha/(alpha+beta),            # same mean and variance
+                            sd = sqrt((alpha*beta)/((alpha+beta)^2*(alpha+beta+1)))))
+  
+  ggplot(data= fig.dat)+                                              # specify data
+    geom_line(aes(x=x, y=beta.pdf, color="Beta(2,5)")) +                 # plot beta dist
+    geom_line(aes(x=x, y=norm.pdf, color="Gaussian(0.2857, 0.0255)")) +  # plot guassian dist
+    geom_hline(yintercept=0)+                                            # plot x axis
+    theme_bw()+                                                          # change theme
+    xlab("x")+                                                           # label x axis
+    ylab("Density")+                                                     # label y axis
+    scale_color_manual("", values = c("black", "grey"))+                 # change colors
+    theme(legend.position = "bottom")    
+}
+
+#List of alpha beta pairs to loop through
+alpha.list = c(2, 5, 5, 0.5)
+beta.list = c(5, 5, 2, 0.5)
+beta.summaries = data.frame()
+beta.plots = list()
+
+#Loop must be of same length as list of alpha and beta
+for (i in 1:4){ 
+  alpha = alpha.list[i]
+  beta = beta.list[i]
+  new.row = summarize.beta(alpha, beta)
+  beta.summaries = rbind(beta.summaries, new.row) #saves the summaries of each beta
+  new.plot = plot.beta(alpha, beta)
+  beta.plots[[i]] = new.plot #saves each beta plot as an element in this list
+}
+
+
+#############################################################################
+#Task 2: Compute the moments
+#############################################################################
+#creating the integrans for centered and uncentered functions
+uncent.integrand = function(x, alpha, beta, k){
+  (x^k)*dbeta(x, shape1 = alpha, shape2 = beta)
+}
+cent.integrand = function(x, alpha, beta, k){
+  ux = integrate(uncent.integrand, lower = 0, upper = 1, alpha = alpha, beta = beta, k = 1)$value
+  ((x-ux)^k) * dbeta(x, shape1 = alpha, shape2 = beta)
+}
+
+#calculating the centered and uncentered beta moment
+beta.moment = function(alpha, beta, k, centered = T){
+  #uncentered moment
+  if (centered == F){
+    uncent.moment = integrate(uncent.integrand, lower = 0, upper = 1, alpha = alpha, beta = beta, k = k)
+    return(uncent.moment$value)
+  }
+  #centered moment
+  if (centered == T){
+    cent.moment = integrate(cent.integrand, lower = 0, upper = 1, alpha = alpha, beta = beta, k = k)
+    return(cent.moment$value)
+  }
+}
+
+#calculating population-level characteristics using the moment
+pop.chars = function(alpha, beta){ 
+  mean = beta.moment(alpha, beta, 1, F)
+  var = beta.moment(alpha, beta, 2)
+  skew = (beta.moment(alpha, beta, 3))/((beta.moment(alpha, beta, 2))^1.5)
+  kurt = (beta.moment(alpha, beta, 4)/(beta.moment(alpha, beta, 2)^2))-3
+  results = c(mean, var, skew, kurt)
+}
+
+
+(pop.chars(2, 5))
+(beta.moment(2, 5, 1,))
