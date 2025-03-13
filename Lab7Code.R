@@ -11,6 +11,7 @@ library(tidyverse)
 library(e1071)
 library(cumstats)
 library(patchwork)
+library(xtable)
 #############################################################################
 #Task 1: Describe The Population Distribution
 #############################################################################
@@ -103,6 +104,7 @@ pop.chars = function(alpha, beta){
   skew = (beta.moment(alpha, beta, 3))/((beta.moment(alpha, beta, 2))^1.5)
   kurt = (beta.moment(alpha, beta, 4)/(beta.moment(alpha, beta, 2)^2))-3
   results = c(mean, var, skew, kurt)
+  return(results)
 }
 
 
@@ -137,8 +139,17 @@ beta.sample.summary = function(alpha, beta, seed){
          y = "Probability Density")
 }
 
-x = (beta.sample.summary(2, 5, 7272)) #testing it
 
+x = (beta.sample.summary(2, 5, 7272)) #testing it
+alpha.list = c(2, 5, 5, 0.5)
+beta.list = c(5, 5, 2, 0.5)
+beta.summaries.data = data.frame()
+for (i in 1:4){ 
+  alpha = alpha.list[i]
+  beta = beta.list[i]
+  new.row = beta.sample.summary(alpha, beta, 7272)
+  beta.summaries.data = rbind(beta.summaries.data, new.row)
+}
 
 #############################################################################
 #Task 4: Is Sample Size Important

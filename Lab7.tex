@@ -102,17 +102,43 @@ However, often times we may not have access to the beta, alpha, or moment of the
 
 
 \section{Methods}
-The mean, variance, skewness, and excess kurtosis of a distribution are key summary characteristics that tell us more about the data we are looking at. With a beta distribution, we can calculate the population-level values using either the $\alpha$ and $\beta$ or the moments. Throughout this process, we load and use the following libraries: \texttt{ggplot2} and \texttt{patchwork} for plotting and visualizing data, \texttt{tidyverse} to manipulate data, and \texttt{e1071} and \texttt{cumstats} for additional statistical functions and analysis. 
+The mean, variance, skewness, and excess kurtosis of a distribution are key summary characteristics that tell us more about the data we are looking at. With a beta distribution, we can calculate the population-level values using either the $\alpha$ and $\beta$ or the moments. Throughout this process, we load and use the following libraries: \texttt{ggplot2} \citep{ggplot2} and \texttt{patchwork} \citep{patchwork} for plotting and visualizing data, \texttt{tidyverse} \citep{tidyverse} to manipulate and summarize data, and \texttt{e1071} \citep{e1071} and \texttt{cumstats} \citep{cumstats} for additional statistical functions and analysis. 
 
 \subsection{Describing and Summarizing The Population}
 As the beta distribution's probability density function is defined in terms of the parameters $\alpha$ and $\beta$, the population-level characteristics are similarly defined by them. Using a function we created to summarize the mean, variance, skewness, and excess kurtosis (hereafter referred to as key characteristics) and a function to plot a beta distribution, compared to a Gaussian, we considered four cases: 
 Beta($\alpha = 2, \beta = 5$), Beta($\alpha = 5, \beta = 5$), Beta($\alpha = 5, \beta = 2$), and Beta($\alpha = 0.50, \beta = 0.50$). 
+To confirm our function works, we also computed the population-level key characteristics via the moments of the beta distribution, which match those using alpha and beta.
 
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 \includegraphics[width=\maxwidth]{figure/unnamed-chunk-1-1} 
 \end{knitrout}
 
+% latex table generated in R 4.4.2 by xtable 1.8-4 package
+% Thu Mar 13 12:12:36 2025
+\begin{table}[H]
+\centering
+\resizebox{\columnwidth}{!}{  % Resize the table to fit the text width
+\begin{tabular}{rlrrrr}
+  \hline
+ & beta\_distribution & mean & varience & skewness & excess\_kurtosis \\ 
+  \hline
+1 & 2,5 & 0.29 & 0.03 & 0.60 & -0.12 \\ 
+  2 & 5,5 & 0.50 & 0.02 & 0.00 & -0.46 \\ 
+  3 & 5,2 & 0.71 & 0.03 & -0.60 & -0.12 \\ 
+  4 & 0.5,0.5 & 0.50 & 0.12 & 0.00 & -1.50 \\ 
+   \hline
+\end{tabular}
+} % End of resizebox
+\caption{Summary of Beta Distribution Parameters}
+\end{table}
+
+\subsection{Summarizing Random Data}
+When summarizing data, our goal is to approximate what the population distribution might be. We test this by generating a sample of $n = 500$ from each of the considered beta distributions using \texttt{set.seed(7272)} to ensure consistency across samples and attempts. We summarize the data using \texttt{summarize()} from \texttt{dplyr} \citep{tidyverse}.
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-2-1} 
+\end{knitrout}
 
 \section{Results}
 Tie together the Introduction -- where you introduce the problem at hand -- and the methods --  what you propose to do to answer the question. Present your data, the results of your analyses, and how each reported aspect contributes to answering the question. This section should include table(s), statistic(s), and graphical displays. Make sure to put the results in a sensible order and that each result contributes a logical and developed solution. It should not just be a list. Avoid being repetitive. 
