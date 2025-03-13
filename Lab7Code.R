@@ -9,7 +9,6 @@
 library(ggplot2)
 library(tidyverse)
 library(e1071)
-library(ggplot2)
 library(cumstats)
 library(patchwork)
 #############################################################################
@@ -46,7 +45,8 @@ plot.beta = function(alpha, beta){
     xlab("x")+                                                           # label x axis
     ylab("Density")+                                                     # label y axis
     scale_color_manual("", values = c("black", "grey"))+                 # change colors
-    theme(legend.position = "bottom")    
+    theme(legend.position = "bottom")+
+    ggtitle(paste("Beta(alpha=", alpha, ", beta=", beta, ")"))
 }
 
 #List of alpha beta pairs to loop through
