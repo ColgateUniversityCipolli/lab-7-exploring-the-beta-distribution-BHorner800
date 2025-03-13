@@ -10,6 +10,8 @@ library(ggplot2)
 library(tidyverse)
 library(e1071)
 library(ggplot2)
+library(cumstats)
+library(patchwork)
 #############################################################################
 #Task 1: Describe The Population Distribution
 #############################################################################
@@ -26,6 +28,7 @@ summarize.beta = function(alpha, beta){
                               varience = var,
                               skewness = skew,
                               excess_kurtosis = kurt)
+  return(beta.summaries)
 }
 
 plot.beta = function(alpha, beta){
@@ -61,7 +64,11 @@ for (i in 1:4){
   new.plot = plot.beta(alpha, beta)
   beta.plots[[i]] = new.plot #saves each beta plot as an element in this list
 }
-
+p1 = plot.beta(2, 5)
+p2 = plot.beta(5, 5)
+p3 = plot.beta(5, 2)
+p4 = plot.beta(0.5, 0.5)
+(p1+p2)/(p3+p4)
 
 #############################################################################
 #Task 2: Compute the moments
@@ -105,8 +112,8 @@ pop.chars = function(alpha, beta){
 ##########################
 # Generate a sample
 ##########################
-beta.sample.summary = function(alpha, beta){
-  set.seed(7272) # Set seed so we all get the same results.
+beta.sample.summary = function(alpha, beta, seed){
+  set.seed(seed) # Set seed so we all get the same results.
   sample.size <- 500 # Specify sample details
   beta.sample <- rbeta(n = sample.size,  # sample size
                        shape1 = alpha,   # alpha parameter
@@ -130,5 +137,93 @@ beta.sample.summary = function(alpha, beta){
          y = "Probability Density")
 }
 
-(beta.sample.summary(2, 5))
+x = (beta.sample.summary(2, 5, 7272)) #testing it
 
+
+#############################################################################
+#Task 4: Is Sample Size Important
+#############################################################################
+set.seed(7272) # Set seed so we all get the same results.
+sample.size <- 500 # Specify sample details
+alpha = 2
+beta = 5
+beta.sample <- rbeta(n = sample.size,  # sample size
+                     shape1 = alpha,   # alpha parameter
+                     shape2 = beta) 
+
+c.mean = cummean(beta.sample)
+c.var  = cumvar(beta.sample)
+c.skew = cumskew(beta.sample)
+c.kurt = cumkurt(beta.sample)
+
+beta.pop.data = summarize.beta(alpha, beta)
+plot.on.og.sample <- plot.on.og.sample +
+  geom_line(data = new.data, aes(x=x, y=y), color = i)
+
+
+#############################################################################
+#Task 5: How can we model the variation
+#############################################################################
+beta.sample.summary = function(alpha, beta, seed, n){
+  '
+  input -> alpha, beta, seed, n (number of samples
+  output -> beta sample summary (mean, var, skew, kurt)
+  '
+  set.seed(seed) # Set seed so we all get the same results.
+  sample.size <- n # Specify sample details
+  beta.sample <- rbeta(n = sample.size,  # sample size
+                       shape1 = alpha,   # alpha parameter
+                       shape2 = beta)    # beta parameter
+  
+  beta.sample.tibble = tibble(values = beta.sample) %>%
+    summarize(mean = mean(beta.sample),
+              variance = var(beta.sample),
+              skewness = skewness(beta.sample),
+              excess_kurtosis = kurtosis(beta.sample))-3
+  return(beta.sample.tibble)
+}
+
+#Looping Through sample to see variance in data
+n = 500 #sample size
+a = 2 #alpha
+b = 5 #beta
+seed = 7272
+stats.summary = data.frame() #where we are going to be storing the data
+
+for (i in 1:1000){
+  seed = 7272 + i
+  new.row = beta.sample.summary(a, b, seed, n)
+  stats.summary = rbind(stats.summary, new.row) #saves the summaries of each beta
+}
+
+
+plot.mean = ggplot(stats.summary, aes(x = mean)) + #assigns the data as the data frame and aes = x asis
+  geom_histogram(aes(y=after_stat(density)), binwidth = 0.005, fill = "lightblue", color = "black") + #makes histogram
+  geom_density(color = "red", size = 1) +  #Density curve
+  labs(title = "Histogram of mean", #titles and axis labels
+       x = "Value of Statistic", 
+       y = "Count")
+
+plot.var = ggplot(stats.summary, aes(x = variance)) + #assigns the data as the data frame and aes = x asis
+  geom_histogram(aes(y=after_stat(density)), binwidth = 0.001, fill = "lightblue", color = "black") + #makes histogram
+  geom_density(color = "red", size = 1) +  #Density curve
+  labs(title = "Histogram of Variance", #titles and axis labels
+       x = "Value of Statistic", 
+       y = "Count")
+
+plot.skew = ggplot(stats.summary, aes(x = skewness)) + #assigns the data as the data frame and aes = x asis
+  geom_histogram(aes(y=after_stat(density)), binwidth = 0.05, fill = "lightblue", color = "black") + #makes histogram
+  geom_density(color = "red", size = 1) +  #Density curve
+  labs(title = "Histogram of Skewness", #titles and axis labels
+       x = "Value of Statistic", 
+       y = "Count")
+
+plot.kurt = ggplot(stats.summary, aes(x = excess_kurtosis)) + #assigns the data as the data frame and aes = x asis
+  geom_histogram(aes(y=after_stat(density)), binwidth = 0.05, fill = "lightblue", color = "black") + #makes histogram
+  geom_density(color = "red", size = 1) +  #Density curve
+  labs(title = "Histogram of Excess Kurtosis", #titles and axis labels
+       x = "Value of Statistic", 
+       y = "Count")
+
+stat.plot.summary = (plot.mean + plot.var) / (plot.skew + plot.kurt)
+stat.plot.summary
