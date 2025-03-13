@@ -39,7 +39,7 @@
 
 \begin{multicols}{2}
 \begin{abstract}
-This document provides a basic template for the 2-page labs we will complete each week. Here, briefly summarize what you did and why it might be helpful. Provide all the top-line conclusions, but avoid providing \emph{all} the details. Results should be limited to ``we show X, Y, and Z."
+The beta distribution is useful in modeling probabilities, rates, and other proportion as it and it's key characteristics (mean, variance, skewness, excess kurtosis) are easily defined and calculated. However, when taking a sample of random data, we must estimate those key characteristics. Here, we seek to examine those estimations and compare them to the population-level statistics, find that an increase in sample size will result in the estimated value approaching the population-level. On top of that, the sampling distributions follow a normal distribution around the population-level value.
 \end{abstract}
 
 \noindent \textbf{Keywords:} Beta Distribution; Probability Density; Moments; Sample Size; Variation
@@ -219,17 +219,79 @@ p4 =(beta.sample.summary(0.5, 0.5, 7272))
 (p1+p2)/(p3+p4)
 @
 
-\section{Results}
-Tie together the Introduction -- where you introduce the problem at hand -- and the methods --  what you propose to do to answer the question. Present your data, the results of your analyses, and how each reported aspect contributes to answering the question. This section should include table(s), statistic(s), and graphical displays. Make sure to put the results in a sensible order and that each result contributes a logical and developed solution. It should not just be a list. Avoid being repetitive. 
+\subsection{Modeling Variation in Data Samples}
+When taking a random sample of data, each sample varies from the last. As our goal is to model sampled data with a population-level distribution, we examine how our estimations of the key characteristics vary from sample to sample. Beginning with our set seed of 7272 to generate the random sample, we iterate $(1:1000)$ through seeds 7272+i, where i is the iteration. Our result is a sample of $n = 1000$ means, variances, skewnesses, and excess kurtosises, which we plot to examine their distribution.
 
-\subsection{Results Subsection}
-Subsections can be helpful for the Results section, too. This can be particularly helpful if you have different questions to answer. 
+<<echo = F, size="scriptsize", eval=T, message=F, warning=F>>=
+
+beta.sample.summary = function(alpha, beta, seed, n){
+  '
+  input -> alpha, beta, seed, n (number of samples
+  output -> beta sample summary (mean, var, skew, kurt)
+  '
+  set.seed(seed) # Set seed so we all get the same results.
+  sample.size <- n # Specify sample details
+  beta.sample <- rbeta(n = sample.size,  # sample size
+                       shape1 = alpha,   # alpha parameter
+                       shape2 = beta)    # beta parameter
+  
+  beta.sample.tibble = tibble(values = beta.sample) %>%
+    summarize(mean = mean(beta.sample),
+              variance = var(beta.sample),
+              skewness = skewness(beta.sample),
+              excess_kurtosis = kurtosis(beta.sample))-3
+  return(beta.sample.tibble)
+}
+
+#Looping Through sample to see variance in data
+n = 500 #sample size
+a = 2 #alpha
+b = 5 #beta
+seed = 7272
+stats.summary = data.frame() #where we are going to be storing the data
+
+for (i in 1:1000){
+  seed = 7272 + i
+  new.row = beta.sample.summary(a, b, seed, n)
+  stats.summary = rbind(stats.summary, new.row) #saves the summaries of each beta
+}
+
+
+plot.mean = ggplot(stats.summary, aes(x = mean)) + #assigns the data as the data frame and aes = x asis
+  geom_histogram(aes(y=after_stat(density)), binwidth = 0.005, fill = "lightblue", color = "black") + #makes histogram
+  geom_density(color = "red", size = 1) +  #Density curve
+  labs(title = "Mean", #titles and axis labels
+       x = "Value of Statistic", 
+       y = "Count")
+
+plot.var = ggplot(stats.summary, aes(x = variance)) + #assigns the data as the data frame and aes = x asis
+  geom_histogram(aes(y=after_stat(density)), binwidth = 0.001, fill = "lightblue", color = "black") + #makes histogram
+  geom_density(color = "red", size = 1) +  #Density curve
+  labs(title = "Variance", #titles and axis labels
+       x = "Value of Statistic", 
+       y = "Count")
+
+plot.skew = ggplot(stats.summary, aes(x = skewness)) + #assigns the data as the data frame and aes = x asis
+  geom_histogram(aes(y=after_stat(density)), binwidth = 0.05, fill = "lightblue", color = "black") + #makes histogram
+  geom_density(color = "red", size = 1) +  #Density curve
+  labs(title = "Skewness", #titles and axis labels
+       x = "Value of Statistic", 
+       y = "Count")
+
+plot.kurt = ggplot(stats.summary, aes(x = excess_kurtosis)) + #assigns the data as the data frame and aes = x asis
+  geom_histogram(aes(y=after_stat(density)), binwidth = 0.05, fill = "lightblue", color = "black") + #makes histogram
+  geom_density(color = "red", size = 1) +  #Density curve
+  labs(title = "Excess Kurtosis", #titles and axis labels
+       x = "Value of Statistic", 
+       y = "Count")
+
+stat.plot.summary = (plot.mean + plot.var) / (plot.skew + plot.kurt)
+stat.plot.summary
+@
 
 
 \section{Discussion}
- You should objectively evaluate the evidence you found in the data. Do not embellish or wish-terpet (my made-up phase for making an interpretation you, or the researcher, wants to be true without the data \emph{actually} supporting it). Connect your findings to the existing information you provided in the Introduction.
-
-Finally, provide some concluding remarks that tie together the entire paper. Think of the last part of the results as abstract-like. Tell the reader what they just consumed -- what's the takeaway message?
+When analyzing data, the key characteristics can provide essential summaries to guide one's research. However, often we only have a sample of the population instead of access to the true parameters of a distribution and as such, we estimate the key parameters. These summaries do help, and especially as the sample size increases, it approaches the true values for the population. Additionally, the sampling distribution of the beta function's key characteristics appear to follow normal (gaussian) distribution itself, with the standard deviation and spread of the sampling distribution increasing from the mean to varaiance, to skewness, and finally excess kurtosis. In the future, this will allow us to determine the accuracy of such estimated characteristics. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Bibliography
@@ -244,13 +306,5 @@ you cite them in your document, the bibliography section will automatically popu
 \end{tiny}
 \end{multicols}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Appendix
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\onecolumn
-\section{Appendix}
-
-If you have anything extra, you can add it here in the appendix. This can include images or tables that don't work well in the two-page setup, code snippets you might want to share, etc.
 
 \end{document}

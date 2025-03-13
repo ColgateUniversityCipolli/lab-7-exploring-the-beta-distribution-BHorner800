@@ -90,7 +90,7 @@
 
 \begin{multicols}{2}
 \begin{abstract}
-This document provides a basic template for the 2-page labs we will complete each week. Here, briefly summarize what you did and why it might be helpful. Provide all the top-line conclusions, but avoid providing \emph{all} the details. Results should be limited to ``we show X, Y, and Z."
+The beta distribution is useful in modeling probabilities, rates, and other proportion as it and it's key characteristics (mean, variance, skewness, excess kurtosis) are easily defined and calculated. However, when taking a sample of random data, we must estimate those key characteristics. Here, we seek to examine those estimations and compare them to the population-level statistics, find that an increase in sample size will result in the estimated value approaching the population-level. On top of that, the sampling distributions follow a normal distribution around the population-level value.
 \end{abstract}
 
 \noindent \textbf{Keywords:} Beta Distribution; Probability Density; Moments; Sample Size; Variation
@@ -134,23 +134,23 @@ To confirm our function works, we also computed the population-level key charact
 \end{table}
 
 \subsection{Summarizing Random Data}
-When summarizing data, our goal is to approximate what the population distribution might be. We test this by generating a sample of $n = 500$ from each of the considered beta distributions using \texttt{set.seed(7272)} to ensure consistency across samples and attempts. We summarize the data using \texttt{summarize()} from \texttt{dplyr} \citep{tidyverse}.
+When summarizing data, our goal is to approximate what the population distribution might be. We test this by generating a sample of $n = 500$ from each of the considered beta distributions using \texttt{set.seed(7272)} to ensure consistency across samples and attempts. We summarize the data using \texttt{summarize()} from \texttt{dplyr} \citep{tidyverse} and plot a histogram of the generated sample and its estimated density (red) compared to the population level beta function for the same alpha and beta (blue).
 \begin{knitrout}\scriptsize
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 \includegraphics[width=\maxwidth]{figure/unnamed-chunk-2-1} 
 \end{knitrout}
 
-\section{Results}
-Tie together the Introduction -- where you introduce the problem at hand -- and the methods --  what you propose to do to answer the question. Present your data, the results of your analyses, and how each reported aspect contributes to answering the question. This section should include table(s), statistic(s), and graphical displays. Make sure to put the results in a sensible order and that each result contributes a logical and developed solution. It should not just be a list. Avoid being repetitive. 
+\subsection{Modeling Variation in Data Samples}
+When taking a random sample of data, each sample varies from the last. As our goal is to model sampled data with a population-level distribution, we examine how our estimations of the key characteristics vary from sample to sample. Beginning with our set seed of 7272 to generate the random sample, we iterate $(1:1000)$ through seeds 7272+i, where i is the iteration. Our result is a sample of $n = 1000$ means, variances, skewnesses, and excess kurtosises, which we plot to examine their distribution.
 
-\subsection{Results Subsection}
-Subsections can be helpful for the Results section, too. This can be particularly helpful if you have different questions to answer. 
+\begin{knitrout}\scriptsize
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-3-1} 
+\end{knitrout}
 
 
 \section{Discussion}
- You should objectively evaluate the evidence you found in the data. Do not embellish or wish-terpet (my made-up phase for making an interpretation you, or the researcher, wants to be true without the data \emph{actually} supporting it). Connect your findings to the existing information you provided in the Introduction.
-
-Finally, provide some concluding remarks that tie together the entire paper. Think of the last part of the results as abstract-like. Tell the reader what they just consumed -- what's the takeaway message?
+When analyzing data, the key characteristics can provide essential summaries to guide one's research. However, often we only have a sample of the population instead of access to the true parameters of a distribution and as such, we estimate the key parameters. These summaries do help, and especially as the sample size increases, it approaches the true values for the population. Additionally, the sampling distribution of the beta function's key characteristics appear to follow normal (gaussian) distribution itself, with the standard deviation and spread of the sampling distribution increasing from the mean to varaiance, to skewness, and finally excess kurtosis. In the future, this will allow us to determine the accuracy of such estimated characteristics. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Bibliography
@@ -165,13 +165,5 @@ you cite them in your document, the bibliography section will automatically popu
 \end{tiny}
 \end{multicols}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Appendix
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\onecolumn
-\section{Appendix}
-
-If you have anything extra, you can add it here in the appendix. This can include images or tables that don't work well in the two-page setup, code snippets you might want to share, etc.
 
 \end{document}

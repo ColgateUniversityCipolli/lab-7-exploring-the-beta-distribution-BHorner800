@@ -134,13 +134,18 @@ beta.sample.summary = function(alpha, beta, seed){
     geom_histogram(aes(y=after_stat(density)), binwidth = 0.05, fill = "lightblue", color = "black") + #makes histogram
     geom_density(color = "red", size = 1) +  #Density curve
     stat_function(fun = dbeta, args = list(shape1 = alpha, shape2 = beta), color = "blue", size = 1) +  #True prob density
-    labs(title = "Histogram of Beta Sample", #titles and axis labels
+    labs(title = paste("Beta(alpha=", alpha, ", beta=", beta, ")"), #titles and axis labels
          x = "Beta Distribution Values", 
          y = "Probability Density")
 }
 
 
-x = (beta.sample.summary(2, 5, 7272)) #testing it
+p1 = (beta.sample.summary(2, 5, 7272)) #testing it
+p2 = (beta.sample.summary(5, 5, 7272))
+p3 =(beta.sample.summary(5, 2, 7272))
+p4 =(beta.sample.summary(0.5, 0.5, 7272))
+(p1+p2)/(p3+p4)
+
 alpha.list = c(2, 5, 5, 0.5)
 beta.list = c(5, 5, 2, 0.5)
 beta.summaries.data = data.frame()
