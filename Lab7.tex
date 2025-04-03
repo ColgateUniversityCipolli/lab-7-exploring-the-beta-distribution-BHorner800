@@ -81,10 +81,10 @@
   Ben Horner \\
   Colgate University  \\
   Math Department  \\
-  {\tt email@domain}
+  {\tt bhorner@colgate.edu}
 }
 
-\date{March 13, 2025}
+\date{April 1, 2025}
 
 \maketitle
 
@@ -96,7 +96,7 @@ The beta distribution is useful in modeling probabilities, rates, and other prop
 \noindent \textbf{Keywords:} Beta Distribution; Probability Density; Moments; Sample Size; Variation
 
 \section{Introduction}
-The beta distribution is a continuous distribution that is used to model a random variable X that ranges from 0 to 1. This makes it useful for modeling proportions, probabilities, or rates. The beta distribution is also known for being remarkably flexible with regards to its shape --- it can be left-skewed, right-skewed, or symmetric depending on the value of the parameters that define its shape: $\alpha > 0$ and $\beta > 0$. We can use these parameters alone to not only define the distribution, but calculate the mean, variance, skewness, and excess kurtosis. Additionally, using the centered and uncentered moments of the beta distribution is another way to calculate these population-level characteristics.
+The beta distribution is a continuous distribution that is used to model a random variable X that ranges from 0 to 1. This makes it useful for modeling proportions, probabilities, or rates. The beta distribution is also known for being remarkably flexible with regards to its shape --- it can be left-skewed, right-skewed, or symmetric depending on the value of the parameters that define its shape: $\alpha > 0$ and $\beta > 0$. We can use these parameters alone to not only define the distribution, but calculate the mean, variance, skewness, and excess kurtosis. Additionally, we can use the centered and uncentered moments of the beta distribution is another way to calculate these population-level characteristics.
 
 However, often times we may not have access to the beta, alpha, or moment of the distribution, and thus need to approximate it based off of the data. As such, we will examine whether data summaries help, is the sample size important, and also model the variation of the data summaries when compared to the population-level values. 
 
@@ -148,17 +148,43 @@ When taking a random sample of data, each sample varies from the last. As our go
 \includegraphics[width=\maxwidth]{figure/unnamed-chunk-3-1} 
 \end{knitrout}
 
+\section{Applications: Country Death Rates}
+Applying the beta distribution in a practical sense, Faith (2022) suggests that country death rates worldwide can also be modeled with a beta distribution. Focusing on data from the World Bank, we use the 2022 data to compute the method of moments estimates and maximum likelihood estimates for the $\alpha$ and $\beta$. 
+\begin{table}[H]  % The [H] option keeps the table in the place you want it
+\centering
+\begin{tabular}{rlrr}
+  \hline
+   & parameter & MoM & MLE \\ 
+  \hline
+  1 & alpha & 8.08 & 8.27 \\ 
+  2 & beta  & 931.93 & 985.05 \\ 
+  \hline
+\end{tabular}
+\caption{alpha and beta of the mom and mle}  
+\end{table}
+
+We now must decide which estimator we should use, so to check the bias, precision, and mse of these estimators, we simulate new data $(n = 266)$ with $\alpha = 8$ and $\beta = 950$. The result is a sample of $n = 1000$ method of moments estimates and maximum likelihood estimates for $\alpha$ and $\beta$. 
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|r|r|r|r|}
+  \hline
+  & MLE alpha & MLE beta & MoM alpha & MoM beta \\ 
+  \hline
+  Bias & 0.07199 & 9.11 & 0.08169 & 10.2867 \\ 
+  Precision & 2.12738 & 0.00014185 & 1.82856 & 0.00012221 \\ 
+  MSE & 0.47524 & 7132.702 & 0.55355 & 8288.461 \\ 
+  \hline
+\end{tabular}
+\caption{Comparison of MLE and MoM for alpha and beta}
+\end{table}
 
 \section{Discussion}
-When analyzing data, the key characteristics can provide essential summaries to guide one's research. However, often we only have a sample of the population instead of access to the true parameters of a distribution and as such, we estimate the key parameters. These summaries do help, and especially as the sample size increases, it approaches the true values for the population. Additionally, the sampling distribution of the beta function's key characteristics appear to follow normal (gaussian) distribution itself, with the standard deviation and spread of the sampling distribution increasing from the mean to varaiance, to skewness, and finally excess kurtosis. In the future, this will allow us to determine the accuracy of such estimated characteristics. 
+When analyzing data, the key characteristics can provide essential summaries to guide one's research. However, often we only have a sample of the population instead of access to the true parameters of a distribution and as such, we estimate the key parameters. These summaries do help, and especially as the sample size increases, it approaches the true values for the population. Additionally, the sampling distribution of the beta function's key characteristics appear to follow normal (gaussian) distribution itself, with the standard deviation and spread of the sampling distribution increasing from the mean to varaiance, to skewness, and finally excess kurtosis. Finally, we observe that the MLE is in general, less biased with a lower mse when compared to the MoM. However, the MoM appears to be more precise. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Bibliography
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \vspace{2em}
-
-\noindent\textbf{Bibliography:} Note that when you add citations to your bib.bib file \emph{and}
-you cite them in your document, the bibliography section will automatically populate here.
 
 \begin{tiny}
 \bibliography{bib}
